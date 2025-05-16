@@ -1,0 +1,33 @@
+{
+    "files.associations": {
+        "ring_buffer.h": "c",
+        "driver_usart.h": "c",
+        "stm32g4xx_hal_uart_ex.h": "c",
+        "main.h": "c",
+        "usart.h": "c",
+        "uart_dev.h": "c",
+        "driver_usart3.h": "c",
+        "tim.h": "c",
+        "stm32g4xx_hal.h": "c",
+        "usart3_dev.h": "c",
+        "input_system.h": "c",
+        "input_buffer.h": "c",
+        "stm32g4xx_hal_usart_ex.h": "c",
+        "stm32g4xx_hal_def.h": "c",
+        "stm32g4xx_hal_usart.h": "c",
+        "cal_uart_dev.h": "c",
+        "cal_time.h": "c",
+        "cal_usart3_dev.h": "c",
+        "stm32g4xx_hal_uart.h": "c",
+        "kal_usart3_dev.h": "c",
+        "gpio.h": "c",
+        "pc_input.h": "c",
+        "kal_time.h": "c",
+        "unit_test.h": "c",
+        "input_test.h": "c",
+        "unit_test_main.h": "c",
+        "debug_log.h": "c",
+        "log_test.h": "c",
+        "unit_common.h": "c"
+    }
+}
