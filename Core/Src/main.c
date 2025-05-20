@@ -57,6 +57,7 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+
 /* USER CODE END 0 */
 
 /**
@@ -94,17 +95,30 @@ int main(void)
   MX_USART1_UART_Init();
   MX_TIM8_Init();
   /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
   printf("Hello World!\r\n");
-
+  // //只需开启PWM输出功能，即可让蜂鸣器响
+  // HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_2);
+  // int duty = 50;
   unit_test_main();
+  /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
+    // /* USER CODE END WHILE */
+    // // 示例：设置TIM8通道2的占空比为50%
+    // PWM_SetDuty(&htim8, TIM_CHANNEL_2, duty);
+    // duty -= 10;
+    // if (duty < 0) {
+    //     duty = 70;
+    // }
+    // HAL_Delay(2000);
+
+    
+    // //关闭PWM输出，即关闭蜂鸣器
+    // HAL_TIM_PWM_Stop(&htim8,TIM_CHANNEL_2);
+    // HAL_Delay(2000);
 
     /* USER CODE BEGIN 3 */
   }

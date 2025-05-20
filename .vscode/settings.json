@@ -28,6 +28,12 @@
         "unit_test_main.h": "c",
         "debug_log.h": "c",
         "log_test.h": "c",
-        "unit_common.h": "c"
+        "unit_common.h": "c",
+        "buzzer_test.h": "c",
+        "driver_buzzer.h": "c",
+        "buzzer_device.h": "c",
+        "kal_buzzer_device.h": "c",
+        "cal_buzzer_device.h": "c",
+        "stm32g4xx_hal_tim_ex.h": "c"
     }
 }

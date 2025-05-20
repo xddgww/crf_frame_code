@@ -5,7 +5,9 @@
 
 // 单元测试宏定义
 // #define INPUT_TEST_FUNCTION 
-#define LOG_TEST_FUNCTION 
+// #define LOG_TEST_FUNCTION 
+#define BUZZER_TEST_FUNCTION
+
 
 /**********************************************************************
  * 函数名称： unit_main_test
