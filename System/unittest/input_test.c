@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include "unit_common.h"
 #include "input_test.h"

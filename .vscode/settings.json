@@ -34,6 +34,16 @@
         "buzzer_device.h": "c",
         "kal_buzzer_device.h": "c",
         "cal_buzzer_device.h": "c",
-        "stm32g4xx_hal_tim_ex.h": "c"
+        "stm32g4xx_hal_tim_ex.h": "c",
+        "driver_eeprom.h": "c",
+        "stm32g4xx_hal_flash_ex.h": "c",
+        "stm32_hal_legacy.h": "c",
+        "driver_flash.h": "c",
+        "flash_device.h": "c",
+        "flash_test.h": "c",
+        "stm32g4xx_hal_flash.h": "c",
+        "cal_flash_device.h": "c",
+        "kal_flash_device.h": "c",
+        "stm32g4xx_hal_flash_ramfunc.h": "c"
     }
 }
