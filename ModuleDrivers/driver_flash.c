@@ -60,7 +60,7 @@ int HAL_FlashErase(FlashDevice *ptFlashDevice, uint32_t Address)
 }
 
 /**********************************************************************
- * 函数名称： HAL_FlashWrite
+ * 函数名称： HAL_FlashWriteData
  * 功能描述： FLASH设备写入一个uint64_t类型的数据
  * 输入参数： FlashDevice指针
  *           Address：存储数据的地址
@@ -87,7 +87,7 @@ int HAL_FlashWriteData(FlashDevice *ptFlashDevice, uint32_t Address, uint64_t da
 }
 
 /**********************************************************************
- * 函数名称： HAL_FlashWrite
+ * 函数名称： HAL_FlashWriteNData
  * 功能描述： FLASH设备写入N个uint64_t类型的数据
  * 输入参数： FlashDevice指针
  *           Address：存储数据的地址
@@ -129,9 +129,11 @@ int HAL_FlashWriteNData(FlashDevice *ptFlashDevice, uint32_t Address, uint64_t *
  *           Address：存储数据的地址
  *           data：数据数组
  *           num：数据的个数
+ *           Erase：擦除策略：0-不擦除；1-先擦除再写入
  * 返 回 值： 0：成功；其他：失败
  ***********************************************************************/
-int HAL_FlashWriteHybrid(FlashDevice *ptFlashDevice, uint32_t addr, uint8_t *data, uint16_t len) {
+int HAL_FlashWriteHybrid(FlashDevice *ptFlashDevice, uint32_t addr, uint8_t *data, uint16_t len, uint8_t Erase) 
+{
     uint8_t *bytes = (uint8_t *)data;
     int ret = 0;
     
@@ -140,7 +142,9 @@ int HAL_FlashWriteHybrid(FlashDevice *ptFlashDevice, uint32_t addr, uint8_t *dat
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
     
     // 2. 擦除目标扇区（需根据实际擦除单位调整）
-    FlashErase(addr);
+    if(Erase) {
+        FlashErase(addr);
+    }
 
     // 3. 混合写入策略
     uint16_t i = 0;

@@ -3,16 +3,28 @@
 #include "debug_log.h"
 #include <string.h>
 
+
+#define USE_LOAD_BALANCE             1  // 开启负载均衡，使得写操作均匀分布在主备份上
+#if USE_LOAD_BALANCE
+uint32_t bank_min_size = 512;               // 扇区大小,必须是4或者8的倍数
+uint32_t frequent_write_pos = 0;            // 频繁数据写入位置
+uint32_t static_write_pos = 0;              // 静态数据写入位置
+uint32_t last_frequent_addr = 0;            // 最后写入的频繁数据地址
+uint32_t last_static_addr = 0;              // 最后写入的静态数据地址
+#endif
+
 #define FLASH_MAGIC                  0x55AA1234
 #define FREQUENT_DATA_BASE_MASTER    ((uint32_t)0x08019800)  // 频繁数据存储起始主地址
-#define FREQUENT_DATA_BASE_SLAVE     ((uint32_t)0x08019800)  // 频繁数据存储起始备地址
-#define STATIC_DATA_BASE_MASTER      ((uint32_t)0x0801A000)  // 静态数据存储起始主地址
-#define STATIC_DATA_BASE_SLAVE       ((uint32_t)0x0801A000)  // 静态数据存储起始备地址
+#define FREQUENT_DATA_BASE_SLAVE     ((uint32_t)0x0801A000)  // 频繁数据存储起始备地址
+#define STATIC_DATA_BASE_MASTER      ((uint32_t)0x0801A800)  // 静态数据存储起始主地址
+#define STATIC_DATA_BASE_SLAVE       ((uint32_t)0x0801B000)  // 静态数据存储起始备地址
 #define FREQUENT_DATA_END1           (FREQUENT_DATA_BASE_MASTER + SECTOR_SIZE)
 #define FREQUENT_DATA_END2           (FREQUENT_DATA_BASE_SLAVE + SECTOR_SIZE)
 #define STATIC_DATA_END1             (STATIC_DATA_BASE_MASTER + SECTOR_SIZE)
 #define STATIC_DATA_END2             (STATIC_DATA_BASE_SLAVE + SECTOR_SIZE)
 #define BACKUP_COPIES                2 // flash重写次数
+
+
 
 static uint16_t CalculateCRC16(const void *data, uint16_t len) 
 {
@@ -45,6 +57,39 @@ static int ValidateEntry(const FlashDataEntry *entry) {
     return (crc == entry->crc16) ? 1 : 0;
 }
 
+
+static int CheckAndEraseIfFull(uint8_t data_type) {
+    uint32_t write_pos = (data_type == DATA_TYPE_FREQUENT) ? 
+                         frequent_write_pos : static_write_pos;
+
+    // 检查是否接近写满(预留一个entry的空间)
+    if((write_pos + bank_min_size) > SECTOR_SIZE) {
+        // 擦除整个区域
+        FlashEraseData(data_type);
+        printf("FlashEraseData: erase all\n");
+
+        if (data_type == DATA_TYPE_FREQUENT) {
+            frequent_write_pos = 0;
+        } else {
+            static_write_pos = 0;
+        }
+
+        
+        // 清除缓存
+        if(data_type == DATA_TYPE_FREQUENT) {
+            last_frequent_addr = 0;
+        } else {
+            last_static_addr = 0;
+        }
+        
+        // if(SaveMetadata() != 0) {
+        //     DBG_LOGE("Save metadata failed");
+        //     return FLASH_WRITE_FAILED;
+        // }
+    }
+    return FLASH_OK;
+}
+
 /**********************************************************************
  * 函数名称： FlashWriteData
  * 功能描述： 写flash数据
@@ -55,6 +100,9 @@ static int ValidateEntry(const FlashDataEntry *entry) {
  **********************************************************************/
 static int FlashWriteData(uint8_t data_type, const void *data, uint16_t length)
 {
+    uint8_t Erase = 1;
+    uint32_t WritePos = 0;
+
     // 参数检查
     if ((data == NULL) || (length == 0) || (length > MAX_DATA_SIZE) || 
         (data_type >= DATA_TYPE_MAX)) {
@@ -74,11 +122,20 @@ static int FlashWriteData(uint8_t data_type, const void *data, uint16_t length)
     uint32_t MasterAddr = GetBaseAddrMaster(data_type);
     uint32_t SlaveAddr  = GetBaseAddrSlave(data_type);
 
+    // 是否开启负载均衡
+#if USE_LOAD_BALANCE
+        CheckAndEraseIfFull(data_type);
+        WritePos = (data_type == DATA_TYPE_FREQUENT) ? frequent_write_pos : static_write_pos;
+        Erase   = 0;
+#endif
+    printf("FlashWriteData: WritePos = %d\n", WritePos);
+
+
     // 写入第一备份, 失败则重试
     for (int i = 0; i < BACKUP_COPIES; i++)
     {
-        if((KAL_FlashWriteHybrid(NULL, MasterAddr, (uint8_t *)&entry, sizeof(entry)) == 0) &&
-           (KAL_FlashWriteHybrid(NULL, SlaveAddr, (uint8_t *)&entry, sizeof(entry)) == 0)) {
+        if((KAL_FlashWriteHybrid(NULL, MasterAddr + WritePos, (uint8_t *)&entry, sizeof(entry), Erase) == 0) &&
+           (KAL_FlashWriteHybrid(NULL, SlaveAddr + WritePos, (uint8_t *)&entry, sizeof(entry), Erase) == 0)) {
             break;
         }
  
@@ -89,8 +146,24 @@ static int FlashWriteData(uint8_t data_type, const void *data, uint16_t length)
         }
     }
 
+
+    // 更新负载均衡位置
+#if USE_LOAD_BALANCE
+        if (data_type == DATA_TYPE_FREQUENT) {
+            frequent_write_pos += bank_min_size;
+        } else {
+            static_write_pos += bank_min_size;
+        }
+#endif
+
     return FLASH_OK;
 }
+
+int FlashWriteMasterData(uint8_t data_type, const void *data, uint16_t length)
+{
+    
+}
+
 
 /**********************************************************************
  * 函数名称： FlashReadData
@@ -180,5 +253,14 @@ static FlashDevice g_flash_manager = {
  * 返 回 值： FlashDevice指针
  **********************************************************************/
 FlashDevice* GetFlashDevice(void) {
+
+#if USE_LOAD_BALANCE
+    bank_min_size = 512;
+    frequent_write_pos = 0;
+    static_write_pos = 0;
+    last_frequent_addr = 0;
+    last_static_addr = 0;
+#endif
+
     return &g_flash_manager;
 }

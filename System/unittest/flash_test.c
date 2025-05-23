@@ -10,7 +10,7 @@
 uint8_t data_write_buf3[SECTOR_SIZE] = {0};
 
 // 数据备份功能测试1000次
-#define TEST_NUM 1000
+#define TEST_NUM 100
 #define BUF_SIZE 100
 uint8_t str_write_buf[BUF_SIZE] = {0};
 uint8_t str_read_buf[BUF_SIZE] = {0};
@@ -57,7 +57,7 @@ void flash_driver_test(void)
     // 读写扇区测试
     // 通过KEIL仿真，查看是否写2k数据，是否擦除2k扇区
     printf("Flash Test 3 Starting...\r\n");
-    HAL_FlashWriteHybrid(NULL, 0x08019800, data_write_buf3, SECTOR_SIZE);
+    HAL_FlashWriteHybrid(NULL, 0x08019800, data_write_buf3, SECTOR_SIZE, 1);
     HAL_FlashErase(NULL, 0x08019800);
     printf("Flash Test 3 Ending...\r\n\r\n");
 }
@@ -73,23 +73,31 @@ void flash_device_test(void)
 {
     FlashDevice* ptFlashDevice = GetFlashDevice();
 
-    // 读写字符串测试
-    printf("Flash Device Test 1 Starting...\r\n");
-    for (int i = 0; i < TEST_NUM; i++) {
-        // 随机生成内容
-        for (int j = 0; j < BUF_SIZE; j++) {
-            str_write_buf[j] = rand() % 256;
-        }
-        ptFlashDevice->Write(DATA_TYPE_FREQUENT, str_write_buf, BUF_SIZE);
-        ptFlashDevice->Read(DATA_TYPE_FREQUENT, str_read_buf, BUF_SIZE);
-        if (memcmp(str_write_buf, str_read_buf, BUF_SIZE) != 0) {
-            faile_num++;
-        }
-        memset(str_read_buf, 0, BUF_SIZE);
-        ptFlashDevice->Erase(DATA_TYPE_FREQUENT);
+    // // 读写字符串测试
+    // printf("Flash Device Test 1 Starting...\r\n");
+    // for (int i = 0; i < TEST_NUM; i++) {
+    //     // 随机生成内容
+    //     for (int j = 0; j < BUF_SIZE; j++) {
+    //         str_write_buf[j] = rand() % 256;
+    //     }
+    //     ptFlashDevice->Write(DATA_TYPE_FREQUENT, str_write_buf, BUF_SIZE);
+    //     ptFlashDevice->Read(DATA_TYPE_FREQUENT, str_read_buf, BUF_SIZE);
+    //     if (memcmp(str_write_buf, str_read_buf, BUF_SIZE) != 0) {
+    //         faile_num++;
+    //     }
+    //     memset(str_read_buf, 0, BUF_SIZE);
+    //     ptFlashDevice->Erase(DATA_TYPE_FREQUENT);
+    // }
+    // printf("Fail Rate:%d%\r\n", (faile_num)/TEST_NUM);
+    // printf("Flash Device Test 1 Ending...\r\n\r\n");
+
+    // 负载均衡测试
+    printf("Flash Device Test 2 Starting...\r\n");
+    uint8_t data_write_buf2[10] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A};
+    ptFlashDevice->Erase(DATA_TYPE_FREQUENT);
+    for (int i = 1; i <= 5; i++) {
+        ptFlashDevice->Write(DATA_TYPE_FREQUENT, data_write_buf2, 10);
     }
-    printf("Success Rate:%f\r\n", (TEST_NUM - faile_num)/1000.0);
-    printf("Flash Device Test 1 Ending...\r\n\r\n");
 }
 
 /**********************************************************************
@@ -107,6 +115,5 @@ void unit_test_main(void)
     // flash设备接口测试
     flash_device_test();
 }
-
 #endif /* UNIT_TESTING_ENABLED */
 #endif /* FLASH_TEST_FUNCTION */

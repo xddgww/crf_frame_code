@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32G431xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32G4xx_HAL_Driver/Inc;../Drivers/STM32G4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32G4xx/Include;../Drivers/CMSIS/Include;..\ModuleDrivers;..\System\device\uart;..\System\kal;..\System\cal;..\System\input;..\System\unittest;..\System\lib</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32G4xx_HAL_Driver/Inc;../Drivers/STM32G4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32G4xx/Include;../Drivers/CMSIS/Include;..\ModuleDrivers;..\System\device\uart;..\System\kal;..\System\cal;..\System\input;..\System\unittest;..\System\lib;..\System\device\flash</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -797,6 +797,31 @@
               <FileName>log_test.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\System\unittest\log_test.c</FilePath>
+            </File>
+            <File>
+              <FileName>flash_test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\System\unittest\flash_test.c</FilePath>
+            </File>
+            <File>
+              <FileName>driver_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\ModuleDrivers\driver_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>flash_device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\System\device\flash\flash_device.c</FilePath>
+            </File>
+            <File>
+              <FileName>kal_flash_device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\System\kal\kal_flash_device.c</FilePath>
+            </File>
+            <File>
+              <FileName>cal_flash_device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\System\cal\cal_flash_device.c</FilePath>
             </File>
           </Files>
         </Group>

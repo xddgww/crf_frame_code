@@ -36,6 +36,11 @@
 "crf_frame_code\input_buffer.o"
 "crf_frame_code\input_test.o"
 "crf_frame_code\log_test.o"
+"crf_frame_code\flash_test.o"
+"crf_frame_code\driver_flash.o"
+"crf_frame_code\flash_device.o"
+"crf_frame_code\kal_flash_device.o"
+"crf_frame_code\cal_flash_device.o"
 --library_type=microlib --strict --scatter "crf_frame_code\crf_frame_code.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

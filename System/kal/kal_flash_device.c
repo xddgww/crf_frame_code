@@ -61,9 +61,9 @@ int KAL_FlashWriteNData(FlashDevice *ptFlashDevice, uint32_t Address, uint64_t *
  *           num：数据的个数
  * 返 回 值： 0：成功；其他：失败
  ***********************************************************************/
-int KAL_FlashWriteHybrid(FlashDevice *ptFlashDevice, uint32_t addr, uint8_t *data, uint16_t len)
+int KAL_FlashWriteHybrid(FlashDevice *ptFlashDevice, uint32_t addr, uint8_t *data, uint16_t len, uint8_t Erase)
 {
-    return CAL_FlashWriteHybrid(ptFlashDevice, addr, data, len);
+    return CAL_FlashWriteHybrid(ptFlashDevice, addr, data, len, Erase);
 }
 
 /**********************************************************************

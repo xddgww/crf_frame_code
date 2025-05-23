@@ -25,7 +25,7 @@ int KAL_FlashInit(FlashDevice *ptFlashDevice);
 int KAL_FlashErase(FlashDevice *ptFlashDevice, uint32_t Address);
 
 /**********************************************************************
- * 函数名称： KAL_FlashWrite
+ * 函数名称： KAL_FlashWriteData
  * 功能描述： FLASH设备写入一个uint64_t类型的数据
  * 输入参数： FlashDevice指针
  *           Address：存储数据的地址
@@ -35,7 +35,7 @@ int KAL_FlashErase(FlashDevice *ptFlashDevice, uint32_t Address);
 int KAL_FlashWriteData(FlashDevice *ptFlashDevice, uint32_t Address, uint64_t data);
 
 /**********************************************************************
- * 函数名称： KAL_FlashWrite
+ * 函数名称： KAL_FlashWriteNData
  * 功能描述： FLASH设备写入N个uint64_t类型的数据
  * 输入参数： FlashDevice指针
  *           Address：存储数据的地址
@@ -54,7 +54,7 @@ int KAL_FlashWriteNData(FlashDevice *ptFlashDevice, uint32_t Address, uint64_t *
  *           num：数据的个数
  * 返 回 值： 0：成功；其他：失败
  ***********************************************************************/
-int KAL_FlashWriteHybrid(FlashDevice *ptFlashDevice, uint32_t addr, uint8_t *data, uint16_t len);
+int KAL_FlashWriteHybrid(FlashDevice *ptFlashDevice, uint32_t addr, uint8_t *data, uint16_t len, uint8_t Erase);
 
 /**********************************************************************
  * 函数名称： KAL_FlashReadData
